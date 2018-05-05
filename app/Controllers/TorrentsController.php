@@ -2,9 +2,12 @@
 
 namespace Jtn\TransmissionClient\Controllers;
 
+use Jtn\Transmission\Operations\AddTorrent;
+use Psr\Http\Message\UploadedFileInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Jtn\Transmission\Operations\{ListTorrents, ModifyTorrent};
+use Slim\Http\UploadedFile;
 
 class TorrentsController extends BaseController
 {
@@ -38,7 +41,16 @@ class TorrentsController extends BaseController
 
     public function store(Request $request, Response $response)
     {
+        /** @var UploadedFile[] $files */
+        $files = $request->getUploadedFiles();
+        if(!isset($files['file'])) {
+            // die
+        }
 
+        $op = new AddTorrent();
+        $op->setFilename($files['file']->file);
+
+        return $response->withJson($this->container->transmission->run($op)->body());
     }
 
 }

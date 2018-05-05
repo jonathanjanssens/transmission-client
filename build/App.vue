@@ -4,7 +4,7 @@
             <div class="toolbar-item">Transmission</div>
             <div class="toolbar-item">
                 <label for="new-torrent-file-upload">➕ Upload Torrent</label>
-                <input id="new-torrent-file-upload" type="file" class="sr-only">
+                <input id="new-torrent-file-upload" type="file" ref="newTorrentFileUpload" class="sr-only" v-on:change="uploadFile">
             </div>
             <div class="toolbar-item">
                 <label for="search-bar" class="sr-only">Search</label>
@@ -34,7 +34,8 @@
             return {
                 torrents: [],
                 search: '',
-                sort: 'Default'
+                sort: 'Default',
+                fileUpload: ''
             }
         },
 
@@ -106,6 +107,18 @@
 
             sortDefault(item) {
                 return item.status !== 6;
+            },
+
+            uploadFile() {
+                let file = this.$refs.newTorrentFileUpload.files[0];
+                let formData = new FormData();
+                formData.append('file', file);
+
+                axios.post('/api/torrents', formData, {
+                    headers: {'Content-Type': 'multipart/form-data'}
+                }).then((r => {
+                    console.log(r);
+                }));
             }
 
         }
